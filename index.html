@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Career Sorting Hat</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at top, #2b1b4d, #0b0714 70%);
+    font-family: Georgia, "Times New Roman", serif; color: #f1e6c8; padding: 16px;
+  }
+  .card {
+    width: 100%; max-width: 560px; padding: 28px; border-radius: 16px;
+    background: rgba(20, 12, 40, 0.88); border: 2px solid #c9a24b;
+    box-shadow: 0 0 30px rgba(201, 162, 75, 0.35);
+  }
+  h1 { text-align: center; margin: 0 0 4px; color: #e8c766; letter-spacing: 2px; font-size: 26px; }
+  .sub { text-align: center; margin-bottom: 8px; font-style: italic; opacity: .85; }
+  .tag { text-align: center; font-size: 14px; opacity: .7; margin-bottom: 18px; }
+  label { display: block; margin: 16px 0 6px; font-weight: bold; }
+  input[type=text], select {
+    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #c9a24b;
+    background: #1a1030; color: #f1e6c8; font-size: 16px; font-family: inherit;
+  }
+  button {
+    width: 100%; margin-top: 22px; padding: 12px; font-size: 18px; cursor: pointer;
+    border: none; border-radius: 8px; background: #c9a24b; color: #1a1030;
+    font-family: inherit; font-weight: bold;
+  }
+  button:hover { background: #e8c766; }
+  #result {
+    margin-top: 22px; padding: 18px; text-align: center; border-radius: 10px;
+    display: none; font-size: 18px; animation: pop .6s ease; line-height: 1.5;
+  }
+  #result .field { font-size: 28px; font-weight: bold; display: block; margin: 8px 0; color: #ffe08a; }
+  #result .list { font-size: 16px; margin-top: 8px; opacity: .95; }
+  .note { margin-top: 14px; font-size: 12px; text-align: center; opacity: .6; }
+  @keyframes pop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>CAREER SORTING HAT</h1>
+  <div class="sub">Where Code Meets Magic</div>
+  <div class="tag">Confused about your future? Let the hat guide you.</div>
+
+  <label for="name">Your name</label>
+  <input type="text" id="name" placeholder="Enter your name">
+
+  <label for="q1">1. Which activity do you enjoy most?</label>
+  <select id="q1">
+    <option value="">Choose...</option>
+    <option value="T">Solving puzzles or building things with computers</option>
+    <option value="B">Organising events or starting small ventures</option>
+    <option value="C">Drawing, designing or making videos</option>
+    <option value="H">Helping people and explaining things</option>
+  </select>
+
+  <label for="q2">2. Which school subject felt easiest?</label>
+  <select id="q2">
+    <option value="">Choose...</option>
+    <option value="T">Maths / Computer Science</option>
+    <option value="B">Economics / Business Studies</option>
+    <option value="C">Art / Languages</option>
+    <option value="H">Social Science / Biology</option>
+  </select>
+
+  <label for="q3">3. How do you like to work?</label>
+  <select id="q3">
+    <option value="">Choose...</option>
+    <option value="T">Alone, focused on logic</option>
+    <option value="B">Leading a team towards a goal</option>
+    <option value="C">Freely, with room for new ideas</option>
+    <option value="H">Close to people, face to face</option>
+  </select>
+
+  <label for="q4">4. What matters most to you in a career?</label>
+  <select id="q4">
+    <option value="">Choose...</option>
+    <option value="T">Building innovative technology</option>
+    <option value="B">Growth, money and independence</option>
+    <option value="C">Expressing creativity</option>
+    <option value="H">Making a difference in society</option>
+  </select>
+
+  <button onclick="sortMe()">Sort My Career!</button>
+  <div id="result"></div>
+  <div class="note">A fun guide to start thinking, not a final decision. Talk to a counsellor or mentor too.</div>
+</div>
+
+<script>
+  const careers = {
+    T: {
+      name: "Technology",
+      color: "#10244d",
+      list: "Software Developer, Data Analyst, Cybersecurity, AI / ML Engineer",
+      text: "Logic and building are your magic!"
+    },
+    B: {
+      name: "Business & Leadership",
+      color: "#4d2a05",
+      list: "Entrepreneur, Manager, Marketing, Finance",
+      text: "You are a natural planner and leader!"
+    },
+    C: {
+      name: "Creative Arts & Design",
+      color: "#4d1040",
+      list: "UI/UX Designer, Animator, Content Creator, Writer",
+      text: "Imagination is your superpower!"
+    },
+    H: {
+      name: "Social & Healthcare",
+      color: "#0f3d2a",
+      list: "Teacher, Counsellor, Doctor, Social Worker",
+      text: "You make the world kinder!"
+    }
+  };
+
+  function sortMe() {
+    const name = document.getElementById("name").value.trim();
+    const answers = ["q1", "q2", "q3", "q4"].map(id => document.getElementById(id).value);
+    const box = document.getElementById("result");
+
+    if (!name || answers.includes("")) {
+      box.style.display = "block";
+      box.style.background = "#3a2a10";
+      box.innerHTML = "Please enter your name and answer all four questions.";
+      return;
+    }
+
+    const score = { T: 0, B: 0, C: 0, H: 0 };
+    answers.forEach(a => score[a]++);
+
+    // highest score wins; ties go to the first answer the user gave
+    let best = answers[0];
+    for (const key in score) {
+      if (score[key] > score[best]) best = key;
+    }
+
+    const c = careers[best];
+    box.style.display = "block";
+    box.style.background = c.color;
+    box.innerHTML =
+      name + ", the hat says your path is..." +
+      "<span class='field'>" + c.name + "</span>" +
+      c.text +
+      "<div class='list'>Careers to explore: " + c.list + "</div>";
+  }
+</script>
+</body>
+</html>
